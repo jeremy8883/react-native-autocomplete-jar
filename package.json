@@ -2,7 +2,7 @@
   "name": "react-native-autocomplete-jar",
   "version": "0.0.1",
   "description": "Autocomplete component for react native. Fully customisable, supports keyboard accessibility, and supports promise throttling.",
-  "main": "index.js",
+  "main": "src/index.js",
   "author": "Jeremy Casey",
   "license": "MIT",
   "repository": {
