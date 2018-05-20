@@ -8,5 +8,11 @@
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/jeremy8883/react-native-autocomplete-jar.git"
-  }
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "src/index.js",
+    "src/AutocompleteJar.js"
+  ]
 }

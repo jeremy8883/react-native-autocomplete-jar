@@ -1,1 +1,3 @@
-console.log('hello world!');
+import AutocompleteJar from './AutocompleteJar';
+
+export default AutocompleteJar;
