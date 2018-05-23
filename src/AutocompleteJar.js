@@ -7,6 +7,7 @@ type Props = {
     clearText: () => void,
     data: [any],
   }) => React.Component,
+  value: ?string,
 };
 
 const empty = { status: 'EMPTY' };
@@ -17,6 +18,14 @@ export default class AutocompleteJar extends PureComponent<Props> {
     value: '',
   }
 
+  componentWillReceiveProps(newProps, newState) {
+    const oldValue = this._getValue(this.props, this.state);
+    const newValue = this._getValue(newProps, newState);
+    if (oldValue !== newValue) {
+      this._fetchResults(newValue);
+    }
+  }
+
   componentWillUnmount() {
     this._isUnmounted = true;
   }
@@ -24,27 +33,34 @@ export default class AutocompleteJar extends PureComponent<Props> {
   _isUnmounted = false
 
   _onChangeText = (text) => {
+    const { onChangeText } = this.props;
+
     this.setState({
       value: text,
     });
-    const resultData = this.state.results[text];
-    if (text && (!resultData || typeof resultData === 'string')) {
+
+    if (onChangeText) onChangeText(text);
+  }
+
+  _fetchResults = (value) => {
+    const resultData = this.state.results[value];
+    if (value && (!resultData || typeof resultData === 'string')) {
       this.setState({
         results: {
           ...this.state.results,
-          [text]: { status: 'LOADING' },
+          [value]: { status: 'LOADING' },
         },
       });
 
       const { fetchResults } = this.props;
-      fetchResults(text)
+      fetchResults(value)
         .then((data) => {
           if (this._isUnmounted) return;
 
           this.setState({
             results: {
               ...this.state.results,
-              [text]: { status: 'SUCCESS', data },
+              [value]: { status: 'SUCCESS', data },
             },
           });
 
@@ -57,7 +73,7 @@ export default class AutocompleteJar extends PureComponent<Props> {
           this.setState({
             results: {
               ...this.state.results,
-              [text]: { status: 'ERROR', error },
+              [value]: { status: 'ERROR', error },
             },
           });
         });
@@ -65,14 +81,23 @@ export default class AutocompleteJar extends PureComponent<Props> {
   }
 
   _handleClearText = () => {
+    const { onChangeText } = this.props;
+
     this.setState({
       value: '',
     });
+    if (onChangeText) onChangeText('');
+  }
+
+  _getValue = (props, state) => {
+    const { value } = props;
+    return value === undefined || value === null ?
+      state.value : value;
   }
 
   render() {
     const { children } = this.props;
-    const { value } = this.state;
+    const value = this._getValue(this.props, this.state);
 
     const result = this.state.results[value] || empty;
 
